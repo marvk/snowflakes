@@ -33,8 +33,6 @@ with (p5) {
             currentSeed = Math.floor(random(0, 99999999));
         }
 
-
-
         frameRate(0);
         draw();
     }
