@@ -14,8 +14,6 @@ with (p5) {
 
     let POINTS = new Set();
 
-    let SEED;
-
     let currentSeed;
 
     let seedTextField = "";
@@ -26,22 +24,18 @@ with (p5) {
         HEX_NUM_X = width / HEX_WIDTH + 1;
         HEX_NUM_Y = height / HEX_ROW_HEIGHT + 1;
 
-        SEED = random(0, 10000);
-        currentSeed = Math.floor(random(0, 99999999));
+        let seed = parseInt(getURLParameter("seed"));
 
-        frameRate(0);
-        draw();
-    }
-
-    function mouseClicked() {
-        return;
-
-        if (mouseButton === LEFT) {
-            currentSeed += 1;
-        } else if (mouseButton === RIGHT) {
-            currentSeed -= 1;
+        console.log(seed);
+        if (!isNaN(seed)) {
+            currentSeed = seed;
+        } else {
+            currentSeed = Math.floor(random(0, 99999999));
         }
 
+
+
+        frameRate(0);
         draw();
     }
 
@@ -53,14 +47,25 @@ with (p5) {
             currentSeed += 1;
             draw();
         } else if (key >= '0' && key <= '9') {
-            console.log(key);
             seedTextField = seedTextField + str(key);
             drawText();
-        } else if (keyCode === 13) {
+        } else if (keyCode === ENTER) {
+            if (seedTextField.length === 0) {
+                return;
+            }
+
             currentSeed = parseInt(seedTextField);
+            console.log("push");
             seedTextField = "";
             draw();
+        } else if (keyCode === BACKSPACE) {
+            seedTextField = seedTextField.slice(0, -1);
+            drawText();
         }
+    }
+
+    function getURLParameter(name) {
+        return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [null, ''])[1].replace(/\+/g, '%20')) || null;
     }
 
     function generate() {
@@ -68,6 +73,7 @@ with (p5) {
     }
 
     function draw() {
+        history.pushState(null, "", "index.html?seed=" + currentSeed);
         generate();
 
         background(50);
@@ -115,10 +121,9 @@ with (p5) {
     function drawText() {
         noStroke();
         fill(50);
-        rect(0, 0, 100, 100);
+        rect(0, 0, width, 40);
 
-        fill(255);
-
+        fill(255, 255, 255, 50);
         text(currentSeed, 10, 10);
         text(seedTextField, 10, 30);
     }
